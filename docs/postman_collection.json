@@ -1,0 +1,201 @@
+{
+  "info": {
+    "name": "codeLinc Life Needs API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base",
+      "value": "http://127.0.0.1:5000"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "assessment_id",
+      "value": ""
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "url": "{{base}}/health",
+        "auth": {
+          "type": "noauth"
+        }
+      }
+    },
+    {
+      "name": "Login (demo user, saves token)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.collectionVariables.set('token', pm.response.json().token);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "{{base}}/auth/login",
+        "auth": {
+          "type": "noauth"
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\": \"demo@codelinc.app\", \"password\": \"Demo2026!\"}"
+        }
+      }
+    },
+    {
+      "name": "Register (saves token)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) pm.collectionVariables.set('token', pm.response.json().token);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "{{base}}/auth/register",
+        "auth": {
+          "type": "noauth"
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\": \"sam@example.com\", \"password\": \"correct-horse\", \"name\": \"Sam\"}"
+        }
+      }
+    },
+    {
+      "name": "Me",
+      "request": {
+        "method": "GET",
+        "url": "{{base}}/auth/me"
+      }
+    },
+    {
+      "name": "Assess (Maria)",
+      "request": {
+        "method": "POST",
+        "url": "{{base}}/calculator/assess",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"profile\": {\"age\": 34, \"annual_income\": 85000, \"dependents\": [{\"age\": 3}, {\"age\": 6}], \"mortgage_balance\": 240000, \"mortgage_years_left\": 25, \"other_debts\": 15000, \"savings\": 30000, \"existing_coverage\": 50000}}"
+        }
+      }
+    },
+    {
+      "name": "Assess (invalid age, expect 400)",
+      "request": {
+        "method": "POST",
+        "url": "{{base}}/calculator/assess",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"profile\": {\"age\": 5, \"annual_income\": 85000}}"
+        }
+      }
+    },
+    {
+      "name": "Start assessment (saves id)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.collectionVariables.set('assessment_id', pm.response.json().id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "{{base}}/assessments",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        }
+      }
+    },
+    {
+      "name": "Chat (edit the message and resend)",
+      "request": {
+        "method": "POST",
+        "url": "{{base}}/assessments/{{assessment_id}}/chat",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"message\": \"I'm 34 and I have two kids, 3 and 6.\"}"
+        }
+      }
+    },
+    {
+      "name": "Assessment detail",
+      "request": {
+        "method": "GET",
+        "url": "{{base}}/assessments/{{assessment_id}}"
+      }
+    },
+    {
+      "name": "History",
+      "request": {
+        "method": "GET",
+        "url": "{{base}}/assessments"
+      }
+    }
+  ]
+}

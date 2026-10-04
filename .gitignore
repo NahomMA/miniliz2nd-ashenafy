@@ -1,0 +1,35 @@
+# secrets
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.jks
+
+# reference only, contains private keys and large files
+prev_projects*/
+abt-hackaton/*.pdf
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+*.db
+*.sqlite3
+
+# node / expo
+node_modules/
+.expo/
+dist/
+web-build/
+*.apk
+*.aab
+
+# local
+.claude/settings.local.json
+.DS_Store
+instance/
+tools/

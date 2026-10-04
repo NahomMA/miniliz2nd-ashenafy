@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "life-calc": {
+      "command": "back-end/.venv/bin/python",
+      "args": [
+        "-m",
+        "mcp_server.server"
+      ],
+      "env": {
+        "PYTHONPATH": "back-end"
+      }
+    }
+  }
+}

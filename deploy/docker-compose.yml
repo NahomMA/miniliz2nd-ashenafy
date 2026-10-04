@@ -1,0 +1,25 @@
+# API behind Caddy, which obtains and renews the HTTPS certificate for $DOMAIN automatically.
+# Settings come from deploy/.env on the server (created by setup.sh, never committed).
+services:
+  api:
+    build: ../back-end
+    env_file: .env
+    volumes:
+      - data:/data
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    command: caddy reverse-proxy --from ${DOMAIN} --to api:8000
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy:/data
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  data:
+  caddy:

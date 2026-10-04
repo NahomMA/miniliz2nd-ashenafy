@@ -1,5 +1,5 @@
 [project]
-name = "rightsize-api"
+name = "lifesize-api"
 version = "0.1.0"
 description = "Life insurance needs analyzer: Flask API, MCP calculator, Amazon Bedrock chat"
 requires-python = ">=3.11"

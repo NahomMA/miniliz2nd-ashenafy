@@ -35,7 +35,7 @@ export default function LoginScreen() {
       <StatusBar style="dark" />
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-          <Text style={styles.brand}>RightSize</Text>
+          <Text style={styles.brand}>LifeSize</Text>
           <Text style={styles.tagline}>A calm, clear way to find the life insurance coverage that fits your family.</Text>
 
           {creating ? (

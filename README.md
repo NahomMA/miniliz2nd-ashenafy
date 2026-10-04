@@ -1,6 +1,6 @@
 <div align="center">
 
-# RightSize
+# LifeSize
 
 **A calm, conversational way to find the life insurance coverage that fits your family.**
 

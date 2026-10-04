@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "RightSize",
-    "slug": "rightsize",
+    "name": "LifeSize",
+    "slug": "lifesize",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "rightsize",
+    "scheme": "lifesize",
     "userInterfaceStyle": "light",
     "ios": {
       "icon": "./assets/expo.icon"
@@ -18,7 +18,7 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.brokeby30.rightsize"
+      "package": "com.brokeby30.lifesize"
     },
     "web": {
       "output": "static",
@@ -41,7 +41,12 @@
       "reactCompiler": true
     },
     "extra": {
-      "apiUrl": ""
-    }
+      "apiUrl": "",
+      "router": {},
+      "eas": {
+        "projectId": "124b5255-6e8d-4b2a-9337-4a8b62430ab2"
+      }
+    },
+    "owner": "nashab"
   }
 }

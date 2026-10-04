@@ -1,6 +1,9 @@
 import { router, Stack } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
+  ActivityIndicator,
+  Image,
+  Keyboard,
   FlatList,
   KeyboardAvoidingView,
   Platform,
@@ -26,12 +29,25 @@ const MAX_LENGTH = 1000;
 const HEADER_HEIGHT = Platform.OS === "ios" ? 44 : 56;
 
 function Bubble({ message }: { message: Message }) {
-  const mine = message.role === "user";
+  if (message.role === "user") {
+    return (
+      <View style={[styles.bubble, styles.mine]}>
+        <Text style={[styles.bubbleText, { color: colors.card }]}>
+          {message.text}
+        </Text>
+      </View>
+    );
+  }
   return (
-    <View style={[styles.bubble, mine ? styles.mine : styles.theirs]}>
-      <Text style={[styles.bubbleText, mine && { color: colors.card }]}>
-        {message.text}
-      </Text>
+    <View style={styles.assistantRow}>
+      <Image
+        source={require("@/assets/images/liv.png")}
+        style={styles.avatar}
+        accessibilityLabel="LifeSize guide"
+      />
+      <View style={[styles.bubble, styles.theirs]}>
+        <Text style={styles.bubbleText}>{message.text}</Text>
+      </View>
     </View>
   );
 }
@@ -67,6 +83,11 @@ export default function ChatScreen() {
   useEffect(() => {
     if (id === null) void start();
   }, [id, start]);
+
+  // When the result arrives, lower the keyboard so the answer and the results button are in view.
+  useEffect(() => {
+    if (assessment) Keyboard.dismiss();
+  }, [assessment]);
 
   const submit = () => {
     const text = draft.trim();
@@ -111,19 +132,22 @@ export default function ChatScreen() {
           }
           ListFooterComponent={
             <View style={styles.footer}>
-              {busy ? <Text style={styles.typing}>Thinking…</Text> : null}
+              {busy ? (
+                <View style={styles.working}>
+                  <ActivityIndicator color={colors.primary} />
+                  <Text style={styles.typing}>
+                    {messages.length > 8
+                      ? "Working out your numbers…"
+                      : "Thinking…"}
+                  </Text>
+                </View>
+              ) : null}
               <ErrorNote message={error} />
               {error && id === null ? (
                 <Button
                   label="Try again"
                   variant="quiet"
                   onPress={() => void start()}
-                />
-              ) : null}
-              {assessment ? (
-                <Button
-                  label="See your results"
-                  onPress={() => router.push("/results")}
                 />
               ) : null}
               {assessment ? (
@@ -136,6 +160,14 @@ export default function ChatScreen() {
             </View>
           }
         />
+        {assessment ? (
+          <View style={styles.resultsBar}>
+            <Button
+              label="See your results"
+              onPress={() => router.push("/results")}
+            />
+          </View>
+        ) : null}
         <View style={styles.composer}>
           <TextInput
             style={styles.input}
@@ -153,9 +185,16 @@ export default function ChatScreen() {
             accessibilityLabel="Send"
             onPress={submit}
             disabled={busy || !draft.trim()}
-            style={[styles.send, (busy || !draft.trim()) && { opacity: 0.5 }]}
+            style={[styles.send, (busy || !draft.trim()) && styles.sendOff]}
           >
-            <Text style={styles.sendText}>Send</Text>
+            <Text
+              style={[
+                styles.sendText,
+                (busy || !draft.trim()) && { color: colors.muted },
+              ]}
+            >
+              Send
+            </Text>
           </Pressable>
         </View>
       </KeyboardAvoidingView>
@@ -166,6 +205,14 @@ export default function ChatScreen() {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
   flex: { flex: 1 },
+  working: { flexDirection: "row", alignItems: "center", gap: space.sm },
+  resultsBar: {
+    paddingHorizontal: space.md,
+    paddingTop: space.md,
+    backgroundColor: colors.card,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
   headerLinks: { flexDirection: "row", gap: space.lg },
   headerLink: { minHeight: 44, justifyContent: "center" },
   headerLinkText: {
@@ -186,13 +233,27 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 4,
   },
   theirs: {
-    alignSelf: "flex-start",
+    flexShrink: 1,
     backgroundColor: colors.card,
     borderWidth: 1,
     borderColor: colors.border,
     borderBottomLeftRadius: 4,
   },
   bubbleText: { fontSize: font.body, lineHeight: 23, color: colors.text },
+  assistantRow: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    gap: space.sm,
+    paddingRight: space.xl,
+  },
+  avatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
   footer: { gap: space.md, paddingTop: space.sm },
   typing: { color: colors.muted, fontSize: font.small, fontStyle: "italic" },
   composer: {
@@ -221,10 +282,11 @@ const styles = StyleSheet.create({
     minHeight: 48,
     minWidth: 64,
     borderRadius: radius,
-    backgroundColor: colors.accent,
+    backgroundColor: colors.primary,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: space.lg,
   },
+  sendOff: { backgroundColor: colors.border },
   sendText: { color: colors.card, fontSize: font.body, fontWeight: "700" },
 });

@@ -31,6 +31,10 @@ SHOULD_ANSWER = [
     "What is term life insurance?",
     "Why do you need to know my age?",
     "What is the difference between term and whole life?",
+    "Who are you? Are you a real person?",
+    "who are you?",
+    "what is your name",
+    "are you a bot?",
 ]
 
 

@@ -41,7 +41,7 @@ def numbers_in(value: Any) -> set[int]:
     if isinstance(value, bool):
         return set()
     if isinstance(value, int):
-        return {value}
+        return {value, abs(value)}
     if isinstance(value, dict):
         return set().union(*(numbers_in(v) for v in value.values())) if value else set()
     if isinstance(value, list):

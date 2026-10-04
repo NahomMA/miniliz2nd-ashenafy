@@ -11,7 +11,10 @@ from .prompts import CLARIFY, GREETING, OFF_TOPIC_REPLY, RESUME, RESUME_GENERIC,
 from .scripted import INTRO, ScriptedInterview, summarize
 
 log = logging.getLogger(__name__)
-FOLLOW_UP = "Your results are ready. You can explore them and adjust the numbers on the results screen."
+FOLLOW_UP = (
+    "You're all set. Your results are on the results screen, where you can explore and adjust the numbers. "
+    "Ask me anything about them."
+)
 
 
 class ChatService:
@@ -52,6 +55,8 @@ class ChatService:
 
     def _model_turn(self, assessment: Assessment, message: str) -> str:
         last_reply = assessment.transcript[-2]["text"]
+        if assessment.done and len(message.split()) < self.SCOPE_CHECK_MIN_WORDS:
+            return FOLLOW_UP  # a greeting or thanks after the result must not restart the interview
         if not self._in_scope(last_reply, message):
             question = guardrails.last_question(last_reply)
             return OFF_TOPIC_REPLY + (RESUME + question if question else RESUME_GENERIC)

@@ -2,7 +2,7 @@
 import type { ReactNode } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View, type ViewStyle } from 'react-native';
 
-import { colors, font, radius, space } from '@/lib/theme';
+import { colors, font, radius, shadow, space } from '@/lib/theme';
 
 type ButtonProps = { label: string; onPress: () => void; busy?: boolean; disabled?: boolean; variant?: 'primary' | 'quiet' };
 
@@ -60,14 +60,7 @@ const styles = StyleSheet.create({
   buttonQuiet: { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.primary },
   buttonLabel: { color: colors.card, fontSize: font.body, fontWeight: '600' },
   dimmed: { opacity: 0.6 },
-  card: {
-    backgroundColor: colors.card,
-    borderRadius: radius,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: space.lg,
-    gap: space.sm,
-  },
+  card: { backgroundColor: colors.card, borderRadius: 18, padding: space.lg, gap: space.sm, ...shadow },
   cardTitle: { fontSize: font.title, fontWeight: '700', color: colors.text },
   error: { color: colors.danger, fontSize: font.small },
   disclaimer: { color: colors.muted, fontSize: 13, lineHeight: 18, textAlign: 'center' },

@@ -84,7 +84,7 @@ def test_chat_validates_message_and_ownership(chat, client, auth):
 def test_amount_parsing_and_output_check():
     assert guardrails.parse_amounts("85k, $240,000 and 1.2 million") == [85_000, 240_000, 1_200_000]
     assert guardrails.visible("<thinking> plan </thinking>\n\nHow old are you?") == "How old are you?"
-    assert guardrails.numbers_in({"a": [1, {"b": 2}], "c": True, "d": "3"}) == {1, 2}
+    assert guardrails.numbers_in({"a": [1, {"b": -2}], "c": True, "d": "3"}) == {1, 2, -2}
     assert guardrails.unsupported_amounts("goal $1,633,900, not $5k", {1_633_900}) == ["$5k"]
 
 
@@ -108,3 +108,11 @@ def test_in_scope_message_and_failed_scope_check_both_reach_the_main_model(app, 
 def test_last_question_extraction():
     assert guardrails.last_question("Thanks, Maria. Noted! Do you have a mortgage? If so, how much is left?") == "If so, how much is left?"
     assert guardrails.last_question("No question here.") == ""
+
+
+def test_short_message_after_the_result_does_not_restart_the_interview(chat, script):
+    script(calls("full_assessment", {"profile": MARIA}), says("Your coverage goal is $1,633,900."))
+    chat("everything at once")
+    model = script(says("should never be used"))
+    assert "results screen" in chat("Hi")["reply"]
+    assert model.seen == []

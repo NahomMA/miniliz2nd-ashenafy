@@ -186,7 +186,8 @@ def _comparison(p: dict, projection: dict) -> dict:
         )
         if need[key]
     ]
-    term_fits = [f"Most of your need is time-bound: it shrinks as {', '.join(endings)}."] if endings else []
+    listed = " and ".join(filter(None, [", ".join(endings[:-1]), endings[-1]])) if endings else ""
+    term_fits = [f"Most of your need is time-bound: it shrinks as {listed}."] if endings else []
     if term:
         term_fits.append(f"A {term}-year period lines up with when your need falls to what you already have.")
     permanent_fits = [f"A small need lasts at any age: final expenses of about {usd(need['final'])}."]

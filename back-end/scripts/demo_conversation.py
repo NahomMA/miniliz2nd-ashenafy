@@ -12,6 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from app import create_app  # noqa: E402
 from app.config import Settings  # noqa: E402
 
+FOLLOW_UPS = ["Hi", "What if I only replace 10 years of income?"]
 MARIA_LINES = [
     "I'm 34 and I have two kids, 3 and 6.",
     "I make about 85 thousand a year.",
@@ -38,6 +39,9 @@ def main() -> None:
     print("RESULT:", {k: result[k] for k in ("total_need", "resources", "gap")} if result else "no assessment yet")
     if result:
         print("TERM:", result["projection"]["suggested_term_years"], "| PROFILE:", turn["profile"])
+    for follow_up in FOLLOW_UPS:
+        reply = client.post(f"/assessments/{turn['id']}/chat", json={"message": follow_up}, headers=headers).get_json()["reply"]
+        print(f"FOLLOW-UP: {follow_up}\nAI:   {reply}\n")
 
 
 if __name__ == "__main__":

@@ -1,8 +1,14 @@
 /** The current conversation and its result. All numbers come from the API; none are computed here. */
-import { create } from 'zustand';
+import { create } from "zustand";
 
-import { api, errorMessage } from './api';
-import type { Assessment, AssessmentDetail, Message, Profile, Turn } from './types';
+import { api, errorMessage } from "./api";
+import type {
+  Assessment,
+  AssessmentDetail,
+  Message,
+  Profile,
+  Turn,
+} from "./types";
 
 type ConversationState = {
   id: number | null;
@@ -20,7 +26,15 @@ type ConversationState = {
   reset: () => void;
 };
 
-const EMPTY = { id: null, messages: [], profile: null, assessment: null, preview: null, busy: false, error: null };
+const EMPTY = {
+  id: null,
+  messages: [],
+  profile: null,
+  assessment: null,
+  preview: null,
+  busy: false,
+  error: null,
+};
 
 export const useConversation = create<ConversationState>((set, get) => {
   const run = async (work: () => Promise<void>) => {
@@ -40,7 +54,7 @@ export const useConversation = create<ConversationState>((set, get) => {
       profile: turn.profile,
       assessment: turn.assessment,
       preview: null,
-      messages: [...state.messages, { role: 'assistant', text: turn.reply }],
+      messages: [...state.messages, { role: "assistant", text: turn.reply }],
     }));
 
   return {
@@ -49,27 +63,43 @@ export const useConversation = create<ConversationState>((set, get) => {
     start: () =>
       run(async () => {
         set({ ...EMPTY, busy: true });
-        applyTurn(await api<Turn>('/assessments', { body: {} }));
+        applyTurn(await api<Turn>("/assessments", { body: {} }));
       }),
 
     send: (text) =>
       run(async () => {
         const { id } = get();
         if (id === null) return;
-        set((state) => ({ messages: [...state.messages, { role: 'user', text }] }));
-        applyTurn(await api<Turn>(`/assessments/${id}/chat`, { body: { message: text } }));
+        set((state) => ({
+          messages: [...state.messages, { role: "user", text }],
+        }));
+        applyTurn(
+          await api<Turn>(`/assessments/${id}/chat`, {
+            body: { message: text },
+          }),
+        );
       }),
 
     open: (id) =>
       run(async () => {
         const detail = await api<AssessmentDetail>(`/assessments/${id}`);
-        set({ id, messages: detail.messages, profile: detail.profile, assessment: detail.assessment, preview: null });
+        set({
+          id,
+          messages: detail.messages,
+          profile: detail.profile,
+          assessment: detail.assessment,
+          preview: null,
+        });
       }),
 
     whatIf: (changes) =>
       run(async () => {
         const profile = { ...get().profile, ...changes };
-        set({ preview: await api<Assessment>('/calculator/assess', { body: { profile } }) });
+        set({
+          preview: await api<Assessment>("/calculator/assess", {
+            body: { profile },
+          }),
+        });
       }),
 
     clearPreview: () => set({ preview: null }),

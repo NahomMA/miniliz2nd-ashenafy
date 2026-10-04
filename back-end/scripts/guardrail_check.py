@@ -35,6 +35,8 @@ SHOULD_ANSWER = [
     "who are you?",
     "what is your name",
     "are you a bot?",
+    "I am 16 and I have a little brother",
+    "I'm 15",
 ]
 
 

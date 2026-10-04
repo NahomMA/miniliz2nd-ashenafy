@@ -162,17 +162,28 @@ def _assessment(p: dict) -> dict:
 
 
 def _projection(p: dict) -> dict:
-    resources = _resources(p)
+    """Remaining need per year, and when the time-bound part of it ends.
+
+    The need counts as covered once it falls to what the user already has, or, if they have little saved,
+    once only final expenses remain (a small need that lasts at any age and that no term length removes).
+    """
+    resources, lasting = _resources(p), p["assumptions"]["final_expenses"]
     years = [{"year": t, "remaining_need": sum(_need_at(p, t).values())} for t in range(HORIZON_YEARS + 1)]
-    covered = next((y["year"] for y in years if y["remaining_need"] <= resources), None)
-    term = next((n for n in TERM_LENGTHS if covered is not None and n >= covered), None)
+    covered = next((y["year"] for y in years if y["remaining_need"] <= max(resources, lasting)), None)
+    term = next((n for n in TERM_LENGTHS if covered and n >= covered), None)
     if covered == 0:
-        reason = "What you already have covers the need today."
-    elif term:
+        reason = (
+            "What you already have covers the need today."
+            if resources >= years[0]["remaining_need"]
+            else "Only final expenses remain, a small need that lasts at any age."
+        )
+    elif term and resources >= lasting:
         reason = f"Your remaining need falls to what you already have in about {covered} years."
+    elif term:
+        reason = f"Your time-bound needs end in about {covered} years. After that, only final expenses remain."
     else:
-        reason = "Your need does not fall to what you already have within 30 years, so a fixed term may not cover it all."
-    return {"years": years, "covered_year": covered, "suggested_term_years": term if covered else None, "reason": reason}
+        reason = "Your time-bound needs last longer than 30 years, so a fixed term may not cover them all."
+    return {"years": years, "covered_year": covered, "suggested_term_years": term, "reason": reason}
 
 
 def _comparison(p: dict, projection: dict) -> dict:
@@ -189,7 +200,8 @@ def _comparison(p: dict, projection: dict) -> dict:
     listed = " and ".join(filter(None, [", ".join(endings[:-1]), endings[-1]])) if endings else ""
     term_fits = [f"Most of your need is time-bound: it shrinks as {listed}."] if endings else []
     if term:
-        term_fits.append(f"A {term}-year period lines up with when your need falls to what you already have.")
+        ends = "your need falls to what you already have" if _resources(p) >= need["final"] else "your time-bound needs end"
+        term_fits.append(f"A {term}-year period lines up with when {ends}.")
     permanent_fits = [f"A small need lasts at any age: final expenses of about {usd(need['final'])}."]
     if p["lifelong_dependent"]:
         permanent_fits.append("Someone will depend on you for life, so part of your need has no end date.")

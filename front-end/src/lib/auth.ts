@@ -1,11 +1,9 @@
-/** Signed-in state. The token lives only in the device's encrypted store. */
-import * as SecureStore from 'expo-secure-store';
-import { create } from 'zustand';
+/** Signed-in state. The token itself is held by `tokenStore`. */
+import { create } from "zustand";
 
-import { api, setApiToken, setUnauthorizedHandler } from './api';
-import type { Session, User } from './types';
-
-const TOKEN_KEY = 'access_token';
+import { api, setApiToken, setUnauthorizedHandler } from "./api";
+import { tokenStore } from "./token-store";
+import type { Session, User } from "./types";
 
 type AuthState = {
   ready: boolean;
@@ -20,7 +18,7 @@ type AuthState = {
 export const useAuth = create<AuthState>((set, get) => {
   const open = async ({ token, user }: Session) => {
     setApiToken(token);
-    await SecureStore.setItemAsync(TOKEN_KEY, token);
+    await tokenStore.set(token);
     set({ token, user });
   };
 
@@ -32,29 +30,34 @@ export const useAuth = create<AuthState>((set, get) => {
     user: null,
 
     restore: async () => {
-      const token = await SecureStore.getItemAsync(TOKEN_KEY).catch(() => null);
+      const token = await tokenStore.get();
       if (token) {
         setApiToken(token);
         try {
-          const { user } = await api<{ user: User }>('/auth/me');
+          const { user } = await api<{ user: User }>("/auth/me");
           set({ token, user });
         } catch {
           setApiToken(null);
-          await SecureStore.deleteItemAsync(TOKEN_KEY).catch(() => {});
+          await tokenStore.clear();
         }
       }
       set({ ready: true });
     },
 
-    login: async (email, password) => open(await api<Session>('/auth/login', { body: { email, password } })),
+    login: async (email, password) =>
+      open(await api<Session>("/auth/login", { body: { email, password } })),
 
     register: async (name, email, password) =>
-      open(await api<Session>('/auth/register', { body: { name, email, password } })),
+      open(
+        await api<Session>("/auth/register", {
+          body: { name, email, password },
+        }),
+      ),
 
     logout: async () => {
       setApiToken(null);
       set({ token: null, user: null });
-      await SecureStore.deleteItemAsync(TOKEN_KEY).catch(() => {});
+      await tokenStore.clear();
     },
   };
 });

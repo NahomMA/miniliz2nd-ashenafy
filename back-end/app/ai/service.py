@@ -7,8 +7,8 @@ from ..models import Assessment, User
 from ..services.calculator_gateway import CalculatorGateway
 from . import guardrails
 from .base import ChatModel
-from .prompts import CLARIFY, GREETING, OFF_TOPIC_REPLY, RESUME, RESUME_GENERIC, SCOPE_PROMPT, SYSTEM_PROMPT
-from .scripted import INTRO, ScriptedInterview, summarize
+from .prompts import CLARIFY, CRISIS_REPLY, GREETING, OFF_TOPIC_REPLY, RESUME, RESUME_GENERIC, SCOPE_PROMPT, SYSTEM_PROMPT
+from .scripted import ADULT_AGES, ADULTS_ONLY, INTRO, ScriptedInterview, summarize
 
 log = logging.getLogger(__name__)
 FOLLOW_UP = (
@@ -41,7 +41,9 @@ class ChatService:
         """Handle one user message, update the assessment in place and return the assistant's reply."""
         message = guardrails.redact(message)
         assessment.transcript = [*assessment.transcript, {"role": "user", "text": message}]
-        if assessment.mode == Assessment.AI:
+        if guardrails.mentions_self_harm(message):
+            reply = CRISIS_REPLY  # fixed, supportive reply; never sent to the model or the calculator
+        elif assessment.mode == Assessment.AI:
             try:
                 reply = self._model_turn(assessment, message)
             except Exception:
@@ -57,6 +59,9 @@ class ChatService:
         last_reply = assessment.transcript[-2]["text"]
         if assessment.done and len(message.split()) < self.SCOPE_CHECK_MIN_WORDS:
             return FOLLOW_UP  # a greeting or thanks after the result must not restart the interview
+        age = guardrails.stated_age(message)
+        if age is not None and age not in ADULT_AGES and not assessment.done:
+            return ADULTS_ONLY  # decided in code so the interview never continues for a minor
         if not self._in_scope(last_reply, message):
             question = guardrails.last_question(last_reply)
             return OFF_TOPIC_REPLY + (RESUME + question if question else RESUME_GENERIC)

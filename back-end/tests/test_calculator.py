@@ -85,3 +85,18 @@ def test_lifelong_dependent_changes_permanent_view():
 def test_invalid_input_returns_error(changes, field):
     assert calc.coverage_need({**MARIA, **changes})["field"] == field
     assert "error" in calc.what_if(MARIA, changes)
+
+
+def test_term_is_suggested_even_with_nothing_saved():
+    profile = {**MARIA, "savings": 0, "existing_coverage": 0}
+    r = calc.full_assessment(profile)
+    assert (r["projection"]["covered_year"], r["projection"]["suggested_term_years"]) == (25, 25)
+    assert "only final expenses remain" in r["projection"]["reason"]
+    assert "time-bound needs end" in " ".join(r["comparison"]["term"]["fits_when"])
+
+
+def test_short_need_gets_the_shortest_term_and_final_expenses_alone_get_none():
+    assert calc.project_need({"age": 30, "annual_income": 50_000})["suggested_term_years"] == 10
+    only_final = calc.project_need({"age": 30, "annual_income": 50_000, "income_years_to_replace": 0})
+    assert (only_final["covered_year"], only_final["suggested_term_years"]) == (0, None)
+    assert "final expenses" in only_final["reason"]

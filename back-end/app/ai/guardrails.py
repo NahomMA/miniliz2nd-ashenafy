@@ -8,6 +8,10 @@ SSN = re.compile(r"\b\d{3}[- ]?\d{2}[- ]?\d{4}\b")
 NUMBER = re.compile(r"(\d[\d,]*(?:\.\d+)?)\s*(k|thousand|m|mil|million)?\b", re.I)
 DOLLAR_AMOUNT = re.compile(r"\$\s?\d[\d,]*(?:\.\d+)?\s*(?:k|thousand|m|mil|million)?\b", re.I)
 REASONING = re.compile(r"<(thinking|reasoning)>.*?</\1>\s*", re.S | re.I)
+OWN_AGE = re.compile(r"\b(?:i am|i'm|im)\s+(\d{1,3})\b", re.I)
+SELF_HARM = re.compile(
+    r"\b(kill(ing)? myself|suicid\w*|end(ing)? my (own )?life|tak(e|ing) my (own )?life|want to die|hurt(ing)? myself|self[- ]harm)\b", re.I
+)
 MULTIPLIERS = {"k": 1_000, "thousand": 1_000, "m": 1_000_000, "mil": 1_000_000, "million": 1_000_000}
 
 
@@ -19,6 +23,17 @@ def redact(text: str) -> str:
 def visible(reply: str) -> str:
     """The reply without any reasoning block some models emit."""
     return REASONING.sub("", reply).strip()
+
+
+def stated_age(text: str) -> int | None:
+    """The age a user gives for themselves ("I am 16"), or None. Other people's ages are ignored."""
+    match = OWN_AGE.search(text)
+    return int(match.group(1)) if match else None
+
+
+def mentions_self_harm(text: str) -> bool:
+    """True when a message suggests the user may be thinking of harming themselves."""
+    return bool(SELF_HARM.search(text))
 
 
 def last_question(text: str) -> str:

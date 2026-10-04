@@ -116,3 +116,26 @@ def test_short_message_after_the_result_does_not_restart_the_interview(chat, scr
     model = script(says("should never be used"))
     assert "results screen" in chat("Hi")["reply"]
     assert model.seen == []
+
+
+def test_scripted_interview_turns_away_minors_without_advancing():
+    interview, state = ScriptedInterview(), ScriptedInterview.new_state()
+    state, reply = interview.answer(state, "I am 16")
+    assert "adults aged 18 to 80" in reply and state["step"] == 0
+    state, reply = interview.answer(state, "34")
+    assert state["answers"] == {"age": 34} and state["step"] == 1
+
+
+def test_a_minor_is_turned_away_before_the_model_is_called(chat, script):
+    model = script(says("should never be used"))
+    assert "adults aged 18 to 80" in chat("I am 16 and I have a little brother")["reply"]
+    assert model.seen == []
+    assert guardrails.stated_age("I'm 34 and have two kids, 3 and 6") == 34
+    assert guardrails.stated_age("my kids are 3 and 6") is None
+
+
+def test_self_harm_message_gets_crisis_support_and_never_reaches_the_model(chat, script):
+    model = script(says("should never be used"))
+    reply = chat("if I kill myself will my family get the money")["reply"]
+    assert "988" in reply and model.seen == []
+    assert not guardrails.mentions_self_harm("What happens to my family if I die?")

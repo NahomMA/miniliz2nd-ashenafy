@@ -12,6 +12,11 @@ from .guardrails import parse_amounts
 NOTHING = re.compile(r"\b(no|none|nope|nothing|zero|n/a)\b", re.I)
 NOT_SURE = re.compile(r"\b(not sure|don'?t know|unsure|no idea|skip)\b", re.I)
 RETRY = "Could you give me a number? A rough estimate is fine."
+ADULTS_ONLY = (
+    "LifeSize is designed for adults aged 18 to 80, because a person generally needs to be an adult to take out "
+    "their own life insurance policy. A parent or guardian is welcome to use it for the family. How old are you?"
+)
+ADULT_AGES = range(18, 81)
 INTRO = "Let me ask a few quick questions instead. "
 
 
@@ -50,6 +55,8 @@ class ScriptedInterview:
         """Record an answer. Returns the new state and the next question, or None when the interview is complete."""
         step, answers = STEPS[state["step"]], dict(state["answers"])
         amounts = parse_amounts(message)
+        if step.field == "age" and amounts and amounts[0] not in ADULT_AGES:
+            return state, ADULTS_ONLY
         if step.field == "dependents":
             answers["dependents"] = [{"age": a} for a in amounts if a <= 120]
         elif amounts:

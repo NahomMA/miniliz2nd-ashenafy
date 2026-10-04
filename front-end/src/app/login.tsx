@@ -1,22 +1,32 @@
-import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
-import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StatusBar } from "expo-status-bar";
+import { useState } from "react";
+import {
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Button, ErrorNote } from '@/components/ui';
-import { errorMessage } from '@/lib/api';
-import { useAuth } from '@/lib/auth';
-import { colors, font, radius, shadow, space } from '@/lib/theme';
+import { Button, ErrorNote } from "@/components/ui";
+import { errorMessage } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
+import { colors, font, radius, shadow, space } from "@/lib/theme";
 
-const DEMO = { email: 'demo@codelinc.app', password: 'Demo2026!' };
+const DEMO = { email: "demo@codelinc.app", password: "Demo2026!" };
 
 export default function LoginScreen() {
   const { login, register } = useAuth();
   const insets = useSafeAreaInsets();
   const [creating, setCreating] = useState(false);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,7 +34,9 @@ export default function LoginScreen() {
     setBusy(true);
     setError(null);
     try {
-      await (creating ? register(name.trim(), email.trim(), password) : login(email.trim(), password));
+      await (creating
+        ? register(name.trim(), email.trim(), password)
+        : login(email.trim(), password));
     } catch (e) {
       setError(errorMessage(e));
       setBusy(false);
@@ -34,18 +46,34 @@ export default function LoginScreen() {
   return (
     <View style={styles.screen}>
       <StatusBar style="light" />
-      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" bounces={false}>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          keyboardShouldPersistTaps="handled"
+          bounces={false}
+        >
           <View style={[styles.hero, { paddingTop: insets.top + space.xl }]}>
             <View style={styles.mascotRing}>
-              <Image source={require('@/assets/images/liv.png')} style={styles.mascot} accessibilityLabel="LifeSize guide" />
+              <Image
+                source={require("@/assets/images/liv.png")}
+                style={styles.mascot}
+                accessibilityLabel="LifeSize guide"
+              />
             </View>
             <Text style={styles.brand}>LifeSize</Text>
-            <Text style={styles.tagline}>A calm, clear way to find the life insurance coverage that fits your family.</Text>
+            <Text style={styles.tagline}>
+              A calm, clear way to find the life insurance coverage that fits
+              your family.
+            </Text>
           </View>
 
           <View style={styles.form}>
-            <Text style={styles.formTitle}>{creating ? 'Create your account' : 'Welcome back'}</Text>
+            <Text style={styles.formTitle}>
+              {creating ? "Create your account" : "Welcome back"}
+            </Text>
             {creating ? (
               <TextInput
                 style={styles.input}
@@ -67,6 +95,8 @@ export default function LoginScreen() {
               autoCapitalize="none"
               autoCorrect={false}
               keyboardType="email-address"
+              returnKeyType="go"
+              onSubmitEditing={submit}
             />
             <TextInput
               style={styles.input}
@@ -76,14 +106,25 @@ export default function LoginScreen() {
               value={password}
               onChangeText={setPassword}
               secureTextEntry
+              returnKeyType="go"
               onSubmitEditing={submit}
             />
             <ErrorNote message={error} />
-            <Button label={creating ? 'Create account' : 'Sign in'} onPress={submit} busy={busy} />
+            <Button
+              label={creating ? "Create account" : "Sign in"}
+              onPress={submit}
+              busy={busy}
+            />
           </View>
 
-          <Pressable accessibilityRole="button" onPress={() => setCreating(!creating)} style={styles.link}>
-            <Text style={styles.linkText}>{creating ? 'I already have an account' : 'Create an account'}</Text>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => setCreating(!creating)}
+            style={styles.link}
+          >
+            <Text style={styles.linkText}>
+              {creating ? "I already have an account" : "Create an account"}
+            </Text>
           </Pressable>
           {creating ? null : (
             <Pressable
@@ -92,12 +133,19 @@ export default function LoginScreen() {
                 setEmail(DEMO.email);
                 setPassword(DEMO.password);
               }}
-              style={styles.link}>
+              style={styles.link}
+            >
               <Text style={styles.linkText}>Use the demo account</Text>
             </Pressable>
           )}
-          <Text style={[styles.footnote, { paddingBottom: insets.bottom + space.lg }]}>
-            Educational estimates only. Your password is stored hashed and your session stays encrypted on this device.
+          <Text
+            style={[
+              styles.footnote,
+              { paddingBottom: insets.bottom + space.lg },
+            ]}
+          >
+            Educational estimates only. Your password is stored hashed and your
+            session stays encrypted on this device.
           </Text>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -111,7 +159,7 @@ const styles = StyleSheet.create({
   scroll: { flexGrow: 1 },
   hero: {
     backgroundColor: colors.primary,
-    alignItems: 'center',
+    alignItems: "center",
     paddingHorizontal: space.xl,
     paddingBottom: 64,
     borderBottomLeftRadius: 32,
@@ -119,9 +167,24 @@ const styles = StyleSheet.create({
     gap: space.sm,
   },
   mascotRing: { padding: 4, borderRadius: 64, backgroundColor: colors.gold },
-  mascot: { width: 112, height: 112, borderRadius: 56, backgroundColor: colors.card },
-  brand: { fontSize: 40, fontWeight: '800', color: colors.card, letterSpacing: -0.5 },
-  tagline: { fontSize: font.body, color: colors.rose, textAlign: 'center', lineHeight: 23 },
+  mascot: {
+    width: 112,
+    height: 112,
+    borderRadius: 56,
+    backgroundColor: colors.card,
+  },
+  brand: {
+    fontSize: 40,
+    fontWeight: "800",
+    color: colors.card,
+    letterSpacing: -0.5,
+  },
+  tagline: {
+    fontSize: font.body,
+    color: colors.rose,
+    textAlign: "center",
+    lineHeight: 23,
+  },
   form: {
     marginTop: -40,
     marginHorizontal: space.lg,
@@ -131,7 +194,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     ...shadow,
   },
-  formTitle: { fontSize: font.title, fontWeight: '700', color: colors.text },
+  formTitle: { fontSize: font.title, fontWeight: "700", color: colors.text },
   input: {
     minHeight: 50,
     borderWidth: 1,
@@ -142,7 +205,20 @@ const styles = StyleSheet.create({
     fontSize: font.body,
     color: colors.text,
   },
-  link: { minHeight: 44, alignItems: 'center', justifyContent: 'center', marginTop: space.xs },
-  linkText: { color: colors.primary, fontSize: font.body, fontWeight: '600' },
-  footnote: { marginTop: 'auto', paddingTop: space.lg, paddingHorizontal: space.xl, fontSize: 12, lineHeight: 17, color: colors.muted, textAlign: 'center' },
+  link: {
+    minHeight: 44,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: space.xs,
+  },
+  linkText: { color: colors.primary, fontSize: font.body, fontWeight: "600" },
+  footnote: {
+    marginTop: "auto",
+    paddingTop: space.lg,
+    paddingHorizontal: space.xl,
+    fontSize: 12,
+    lineHeight: 17,
+    color: colors.muted,
+    textAlign: "center",
+  },
 });

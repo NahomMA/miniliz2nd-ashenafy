@@ -33,3 +33,26 @@ web-build/
 .DS_Store
 instance/
 tools/
+.claude
+
+# kept locally, not part of the published project
+.claude/
+CLAUDE.md
+.mcp.json
+docs/demo.md
+docs/judge-qa.md
+docs/*.png
+docs/*.jpeg
+front-end/.claude/
+front-end/AGENTS.md
+front-end/.vscode/
+front-end/README.md
+front-end/LICENSE
+front-end/example/
+front-end/assets/images/android-icon-background.png
+front-end/assets/images/expo-*.png
+front-end/assets/images/logo-glow.png
+front-end/assets/images/react-logo*.png
+front-end/assets/images/tabIcons/
+front-end/assets/images/tutorial-web.png
+abt-hackaton/

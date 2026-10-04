@@ -1,8 +1,8 @@
-const http = require('http');
-const { getDefaultConfig } = require('expo/metro-config');
+const http = require("http");
+const { getDefaultConfig } = require("expo/metro-config");
 
-const BACKEND = { host: '127.0.0.1', port: 5000 };
-const PREFIX = '/api';
+const BACKEND = { host: "127.0.0.1", port: 5000 };
+const PREFIX = "/api";
 
 const config = getDefaultConfig(__dirname);
 
@@ -24,9 +24,16 @@ config.server = {
         reply.pipe(res);
       },
     );
-    upstream.on('error', () => {
-      res.writeHead(502, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: { message: 'The backend is not running.', code: 'bad_gateway' } }));
+    upstream.on("error", () => {
+      res.writeHead(502, { "Content-Type": "application/json" });
+      res.end(
+        JSON.stringify({
+          error: {
+            message: "The backend is not running.",
+            code: "bad_gateway",
+          },
+        }),
+      );
     });
     req.pipe(upstream);
   },

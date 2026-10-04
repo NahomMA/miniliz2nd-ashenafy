@@ -96,6 +96,18 @@ export default function ChatScreen() {
     void send(text);
   };
 
+  // In a browser, Enter sends and Shift+Enter adds a line (phones use the keyboard's send key).
+  const sendOnEnter = (event: {
+    nativeEvent: { key: string; shiftKey?: boolean };
+    preventDefault?: () => void;
+  }) => {
+    const pressed = event.nativeEvent;
+    if (Platform.OS === "web" && pressed.key === "Enter" && !pressed.shiftKey) {
+      event.preventDefault?.();
+      submit();
+    }
+  };
+
   const signOut = () => {
     reset();
     void logout();
@@ -178,6 +190,10 @@ export default function ChatScreen() {
             onChangeText={setDraft}
             maxLength={MAX_LENGTH}
             multiline
+            submitBehavior="submit"
+            returnKeyType="send"
+            onSubmitEditing={submit}
+            onKeyPress={sendOnEnter}
             editable={id !== null}
           />
           <Pressable
@@ -213,7 +229,12 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: colors.border,
   },
-  headerLinks: { flexDirection: "row", gap: space.lg },
+  // The web header has no side padding of its own, so the links would touch the edge.
+  headerLinks: {
+    flexDirection: "row",
+    gap: space.lg,
+    paddingRight: Platform.OS === "web" ? space.lg : 0,
+  },
   headerLink: { minHeight: 44, justifyContent: "center" },
   headerLinkText: {
     color: colors.card,

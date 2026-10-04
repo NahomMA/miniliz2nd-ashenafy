@@ -1,4 +1,7 @@
+import os
+
 from app import create_app
 
 app = create_app()
-app.extensions["chat"].warm_up()
+if os.getenv("LIFESIZE_WARM_UP", "1") == "1":
+    app.extensions["chat"].warm_up()

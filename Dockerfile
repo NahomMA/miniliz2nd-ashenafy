@@ -17,16 +17,12 @@ COPY back-end/ .
 
 ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
     AWS_REGION=us-east-2 \
-    DATABASE_URL=sqlite:////data/app.db
+    LIFESIZE_WARM_UP=0 \
+    DATABASE_URL=sqlite:////tmp/lifesize.db
 
-RUN useradd --create-home app && mkdir /data && chown app /data
-USER app
-VOLUME /data
 EXPOSE 8000
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=20s \
-  CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"
-
-# One worker process: SQLite has a single writer, and requests are I/O-bound (threads).
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "1", "--threads", "8", "--timeout", "60", "wsgi:app"]
+# A single self-contained process with no files outside /tmp, so it starts in any sandbox.
+CMD ["python", "-m", "flask", "--app", "wsgi", "run", "--host", "0.0.0.0", "--port", "8000"]

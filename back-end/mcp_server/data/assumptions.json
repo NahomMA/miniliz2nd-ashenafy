@@ -1,0 +1,30 @@
+{
+  "final_expenses": {
+    "value": 8300,
+    "label": "Final expenses",
+    "source": "NFDA General Price List Study, national median cost of a funeral with viewing and burial",
+    "url": "https://nfda.org/news/media-center/nfda-news-releases",
+    "as_of": "2023"
+  },
+  "college_cost_per_year": {
+    "value": 11950,
+    "label": "College cost per year",
+    "source": "College Board, Trends in College Pricing and Student Aid 2025, average published tuition and fees, public four-year in-state (excludes room and board)",
+    "url": "https://research.collegeboard.org/trends/college-pricing/highlights",
+    "as_of": "2025-26"
+  },
+  "college_years": {
+    "value": 4,
+    "label": "Years of college",
+    "source": "Convention: four-year degree",
+    "url": null,
+    "as_of": null
+  },
+  "college_end_age": {
+    "value": 22,
+    "label": "Age when college ends",
+    "source": "Convention: college from age 18 to 22",
+    "url": null,
+    "as_of": null
+  }
+}

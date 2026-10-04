@@ -18,15 +18,9 @@ and permanent coverage fit that person's situation. Every number can be adjusted
 </p>
 
 ## Architecture
-
-```mermaid
-flowchart LR
-  A[Expo app<br/>React Native] -- HTTPS + JWT --> B[Flask API<br/>AWS EC2]
-  B -- scope check --> D[Amazon Bedrock<br/>Nova Lite]
-  B -- Converse + tool use<br/>Bedrock Guardrail --> C[Amazon Bedrock<br/>Nova Pro]
-  B -- MCP --> E[MCP server<br/>calculator + sources]
-  B --> F[(SQLite)]
-```
+<p align="center">
+<img src="assets/lifesize-architecture.png" width="900" alt="LifeSize system architecture: Expo app, Flask API on AWS EC2, Amazon Bedrock Nova Lite and Nova Pro behind a Bedrock Guardrail, MCP calculator server and SQLite">
+</p>
 
 ## Where to look
 

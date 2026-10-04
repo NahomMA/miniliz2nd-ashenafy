@@ -41,7 +41,7 @@ def create_app(settings: Settings | None = None) -> Flask:
     db.init_app(app)
     CORS(app, origins=settings.cors_origins)
     register_error_handlers(app)
-    _register_routes(app)
+    _register_routes(app, settings)
 
     with app.app_context():
         db.create_all()
@@ -50,7 +50,7 @@ def create_app(settings: Settings | None = None) -> Flask:
     return app
 
 
-def _register_routes(app: Flask) -> None:
+def _register_routes(app: Flask, settings: Settings) -> None:
     from .routes import assessments, auth, calculator
 
     for blueprint in (auth.bp, calculator.bp, assessments.bp):
@@ -59,6 +59,18 @@ def _register_routes(app: Flask) -> None:
     @app.get("/health")
     def health():
         return {"ok": True}
+
+    @app.get("/")
+    def index():
+        """What this service is, for anyone who opens the address in a browser."""
+        return {
+            "name": "LifeSize API",
+            "ok": True,
+            "about": "Life insurance needs analyzer: Flask API, MCP calculator, Amazon Bedrock chat.",
+            "health": "/health",
+            "demo_login": {"email": settings.demo_email, "password": settings.demo_password},
+            "endpoints": sorted(str(rule) for rule in app.url_map.iter_rules() if rule.endpoint != "static"),
+        }
 
     @app.after_request
     def secure_headers(response):

@@ -6,6 +6,7 @@ Errors: `{"error": {"message": str, "code": str, "field"?: str}}` with status 40
 
 | Method | Path | Auth | Purpose |
 |---|---|---|---|
+| GET | `/` | no | service name, demo login and the list of endpoints |
 | GET | `/health` | no | `{"ok": true}` |
 | POST | `/auth/register` | no | create account |
 | POST | `/auth/login` | no | get token |

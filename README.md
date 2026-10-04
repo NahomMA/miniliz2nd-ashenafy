@@ -4,14 +4,14 @@
 
 **A calm, conversational way to find the life insurance coverage that fits your family.**
 
-codeLinc 11 · Path 2: Life Insurance Needs Analyzer
+codeLinc 11 · Path 2: Life Insurance Needs Analyzer · Team minilikz2nd
 
 ![Python](https://img.shields.io/badge/Python-3.13-3776AB?logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-3-000000?logo=flask)
 ![Expo](https://img.shields.io/badge/Expo-SDK%2057-000020?logo=expo)
 ![Amazon Bedrock](https://img.shields.io/badge/Amazon%20Bedrock-Nova%20%2B%20Guardrails-FF9900?logo=amazonaws&logoColor=white)
 ![MCP](https://img.shields.io/badge/MCP-calculator%20tools-7A1F3D)
-![Tests](https://img.shields.io/badge/tests-44%20passing-2F3E6B)
+![Tests](https://img.shields.io/badge/tests-45%20passing-2F3E6B)
 
 </div>
 
@@ -82,10 +82,18 @@ Tap **Use the demo account** (`demo@codelinc.app` / `Demo2026!`), or create an a
 ### 5. Run the checks
 ```bash
 cd back-end
-uv run pytest -q                              # 44 tests, no AWS needed
+uv run pytest -q                              # 45 tests, no AWS needed
 uv run python scripts/guardrail_check.py      # red-team against the live models
 uv run python scripts/demo_conversation.py    # the demo persona end to end
 ```
+
+### Or run the API with Docker
+```bash
+docker build -t lifesize .
+docker run -p 8000:8000 lifesize
+```
+It starts with no configuration; open http://localhost:8000 for the service description. Add
+`-e AWS_BEARER_TOKEN_BEDROCK=<key> -e BEDROCK_GUARDRAIL_ID=` to use the live models.
 
 ## Where to look
 | To see | Open |

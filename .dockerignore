@@ -1,0 +1,8 @@
+# The image is built from back-end/ only.
+*
+!back-end
+back-end/.venv
+back-end/instance
+back-end/tests
+back-end/**/__pycache__
+back-end/.pytest_cache

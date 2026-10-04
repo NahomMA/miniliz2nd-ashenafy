@@ -69,3 +69,9 @@ def test_assess_requires_auth_and_valid_profile(client, auth):
 def test_unknown_route_returns_json_error(client):
     r = client.get("/nope")
     assert (r.status_code, error(r)["code"]) == (404, "not_found")
+
+
+def test_root_describes_the_service(client):
+    body = client.get("/").get_json()
+    assert body["ok"] and body["name"] == "LifeSize API"
+    assert "/assessments" in body["endpoints"] and "/health" in body["endpoints"]
